@@ -16,6 +16,36 @@
     });
     console.log(vue);
     console.log(vue.message===vue._data.message);
+
+    var o= { a: { b: 2 } }
+    function observe(obj){
+    	for(var i in obj){
+    		defineReactive(obj,i,obj[i]);
+    	}
+    }
+	observe(o);
+    function defineReactive(obj, key, val) {
+    
+    var childOb = observe(val);
+    Object.defineProperty(obj, key, {
+      enumerable: true,
+      configurable: true,
+      get: function reactiveGetter() {
+       
+        console.log(" get",key);
+
+        return val;
+      },
+      set: function reactiveSetter(newVal) {
+      
+          val = newVal;
+        
+        console.log(" set",key,newVal);
+      }
+    });
+  }
+
+  o.a.b;
     </script>
 </body>
 
