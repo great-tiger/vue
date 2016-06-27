@@ -23,8 +23,23 @@ import lifecycleAPI from './api/lifecycle'
  * @public
  */
 
-function Vue (options) {
-  this._init(options)
+/**
+ * Vue 构造函数
+ * 
+ new Vue({
+  el: '#app',
+  init:function(){
+  	//生命周期hook 该配置项，也可以是数组。this 为 vm
+  },
+  data: {
+    message: 'Hello Vue.js!'
+  }
+ })
+ *
+ */
+
+function Vue(options) {
+    this._init(options)
 }
 
 // install internals
