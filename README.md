@@ -1,3 +1,23 @@
+## 分析原则
+
+抓住主要逻辑，放弃细枝末节
+
+由粗及细，步步为营！
+
+## Vue 配置详解
+
+```javascript
+var obj=new Vue({
+  el:"#root",//指定 Vue 管辖元素
+  methods:{"key",fn},//注册方法到obj上,fn中的this就是obj
+  events:{"key":fn},//注册事件
+  watch:{"key",fn},//注册监听
+  data:{//注册数据  访问方式:obj.message===obj._data.message
+      message: 'Hello Vue.js!'
+  }
+});
+```
+
 ## Dep
 
 1、addSub、removeSub、notify、depend
@@ -15,16 +35,58 @@ this._initState()
 ```javascript
 options.el = query(el)     //选择器转成dom元素
 this.propsUnlinkFn = el && el.nodeType === 1 && props?compileAndLinkProps(this, el, props, this._scope):null   //这里涉及到编译，暂时略过
-
 ```
 
 ​           this._initMeta()
 
 ​           this._initMethods()
 
+```javascript
+//这个太简单了，直接上代码吧
+Vue.prototype._initMethods = function () {
+      var methods = this.$options.methods;
+      if (methods) {
+        for (var key in methods) {
+          this[key] = bind(methods[key], this);
+        }
+      }
+};
+```
+
 ​           this._initData()
 
+```javascript
+//options.data的处理，主要集中在这里
+Vue.prototype._initData = function () {
+    /*
+        注意：这里的data已经在 _init 方法中处理了一次，入口代码：
+        options = this.$options = mergeOptions(this.constructor.options, options,
+        this);
+
+        主要功能：
+        this._proxy(key);
+        observe(data, this);
+      */
+    this._proxy(key)
+    observe(data, this)
+}
+```
+
+
+
 _this._initEvents()
+
+​           主要用来处理options中的events，watch字段
+
+```javascript
+Vue.prototype._initEvents = function () {
+    var options = this.$options
+    registerCallbacks(this, '$on', options.events)
+    registerCallbacks(this, '$watch', options.watch)
+  }
+```
+
+
 
 call created hook
 
