@@ -28,3 +28,21 @@ _this._initEvents()
 
 call created hook
 
+## Vue.prototype._proxy
+
+ Proxy a property, so that vm.prop === vm._data.prop
+
+通过get，set 代理 vm 上的属性 到 vm._data 
+
+这也就解释了
+
+```javascript
+ var vue = new Vue({
+        data: {
+            message: 'Hello Vue.js!'
+        }
+ });
+ console.log(vue);
+ console.log(vue.message===vue._data.message);  //true
+```
+

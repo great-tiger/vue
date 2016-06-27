@@ -7884,6 +7884,14 @@ var template = Object.freeze({
      */
 
     Vue.prototype._initData = function () {
+      /*
+        注意：这里的data已经在 _init 方法中处理了一次，入口代码：
+        options = this.$options = mergeOptions(this.constructor.options, options, this);
+
+        主要功能：
+        this._proxy(key);
+        observe(data, this);
+      */
       var dataFn = this.$options.data;
       var data = this._data = dataFn ? dataFn() : {};
       if (!isPlainObject(data)) {

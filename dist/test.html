@@ -10,14 +10,12 @@
     <div id="app"></div>
     <script type="text/javascript">
     var vue = new Vue({
-        el: '#app',
-        init: function() {
-            console.log('init');
-        },
         data: {
             message: 'Hello Vue.js!'
         }
     });
+    console.log(vue);
+    console.log(vue.message===vue._data.message);
     </script>
 </body>
 
