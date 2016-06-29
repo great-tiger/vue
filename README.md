@@ -166,3 +166,13 @@ export function defineReactive (obj, key, val) {
 }
 ```
 
+## parsers/expression
+
+实现的实质是通过new Function 构造代码
+
+主要功能，可以用下面的代码表示：
+
+```javascript
+parse("a+b",{a:1,b:2})  =>  3
+```
+
