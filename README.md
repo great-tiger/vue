@@ -314,9 +314,24 @@ this._unlinkFn = compile(el, options)(this, el) //主要功能集中在这里了
 this._isCompiled = true;
 this._callHook('compiled');
 ```
+compile
+```javascript
+function compile(el, options, partial) {
+    var nodeLinkFn =compileNode(el, options); //编译自己
+    var childLinkFn = compileNodeList(el.childNodes, options); //如果有孩子则编译孩子
 
-
-##compile.js
-
+    //返回link函数
+    return function compositeLinkFn(vm, el, host, scope, frag) {
+      // cache childNodes before linking parent, fix #657
+      var childNodes = toArray(el.childNodes);
+      // link
+      var dirs = linkAndCapture(function compositeLinkCapturer() {
+        if (nodeLinkFn) nodeLinkFn(vm, el, host, scope, frag);
+        if (childLinkFn) childLinkFn(vm, childNodes, host, scope, frag);
+      }, vm);
+      return makeUnlinkFn(vm, dirs);
+    };
+  }
+```
 
 
