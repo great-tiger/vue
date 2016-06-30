@@ -175,4 +175,25 @@ export function defineReactive (obj, key, val) {
 ```javascript
 parse("a+b",{a:1,b:2})  =>  3
 ```
+##batcher.js
+这个模块中有两个队列
+queue
+userQueue
+这两个队列 queue队列会先被执行
+
+pushWatcher (watcher) 将 watcher 放入到队列，下一次事件循环时，执行watcher.run的方法
+
+watcher 结构:
+{
+  id:...
+  user:true||false  //true 放入到userQueue  false 放入到queue队列
+  run:...
+}
+
+##cache.js
+
+实现最近不常用算法
+put(key,value)
+get(key)
+
 
