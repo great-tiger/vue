@@ -306,6 +306,7 @@ Watcher.prototype.afterGet = function () {
 
 ##$mount
 这个过程就比较复杂了
+
 第一步编译：this._compile(el);
 ```javascript
 this._initElement(el)  // vm.$el = el  并且  this._callHook('beforeCompile');
