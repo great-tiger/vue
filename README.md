@@ -303,3 +303,19 @@ Watcher.prototype.afterGet = function () {
 
 如果我们监视的属性被赋值时，会触发dep.notify方法，我们的watcher就会收到通知，触发update方法。下面看一下update方法。
 
+
+##$mount
+这个过程就比较复杂了
+第一步编译：this._compile(el);
+```javascript
+this._initElement(el)  // vm.$el = el  并且  this._callHook('beforeCompile');
+this._unlinkFn = compile(el, options)(this, el) //主要功能集中在这里了
+this._isCompiled = true;
+this._callHook('compiled');
+```
+
+
+##compile.js
+
+
+
