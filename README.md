@@ -1,4 +1,4 @@
-## 分析原则
+﻿## 分析原则
 
 抓住主要逻辑，放弃细枝末节
 
@@ -94,7 +94,7 @@ call created hook
 
  Proxy a property, so that vm.prop === vm._data.prop
 
-通过get，set 代理 vm 上的属性 到 vm._data 
+通过get，set 代理 vm 上的属性 到 vm._data
 
 这也就解释了
 
@@ -198,6 +198,28 @@ watcher 结构:
 ```javascript
 put(key,value)
 get(key)
+```
+
+##watch.js
+```javascript
+//Vue 对外接口
+vm.$watch('a.b.c', function (newVal, oldVal) {
+  // 做点什么
+})
+//内部实现
+Vue.prototype.$watch = function (expOrFn, cb, options) {
+    var vm = this
+    var watcher = new Watcher(vm, expOrFn, cb, {
+      deep: options && options.deep,
+      sync: options && options.sync,
+      filters: parsed && parsed.filters,
+      user: !options || options.user !== false
+    })
+    //取消观察函数
+    return function unwatchFn () {
+      watcher.teardown()
+    }
+  }
 ```
 
 
