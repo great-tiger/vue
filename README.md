@@ -254,6 +254,20 @@ Watcher.prototype.get = function () {
   return value
 }
 ```
+```javascript
+//watcher dep 关系  互相保存对方的引用
+Watcher.prototype.addDep = function (dep) {
+  var id = dep.id
+  if (!this.newDepIds.has(id)) {
+    this.newDepIds.add(id)
+    this.newDeps.push(dep)
+    if (!this.depIds.has(id)) {
+      dep.addSub(this)
+    }
+  }
+}
+```
+
 下面看一下依赖收集完成后，做了点什么？
 ```javascript
 //待看
