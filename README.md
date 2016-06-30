@@ -173,7 +173,7 @@ export function defineReactive (obj, key, val) {
 主要功能，可以用下面的代码表示：
 
 ```javascript
-parse("a+b",{a:1,b:2})  =>  3
+parse("a.b") => {get:..,set:...}
 ```
 ##batcher.js
 这个模块中有两个队列
@@ -221,7 +221,28 @@ Vue.prototype.$watch = function (expOrFn, cb, options) {
     }
   }
 ```
+可以看到,$watch内部就是调用的Watcher，下面就具体关注一下watcher.js的实现吧
+先看一下构造函数：
+```javascript
+//保留主要代码 假定expOrFn 为 表达式
+export default function Watcher (vm, expOrFn, cb, options) {
 
+  this.vm = vm
+  vm._watchers.push(this)
+
+  this.expression = expOrFn
+  this.cb = cb
+  this.id = ++uid // uid for batching
+
+  var res = parseExpression(expOrFn, this.twoWay)
+  this.getter = res.get
+  this.setter = res.set
+
+  this.value =this.get()
+
+}
+```
+通过看上面的代码，也没有发现什么神奇的地方。就是一些初始化工作。接着注意一下$watch的实现，就是调用了一下new Watcher实例化了一个对象，怎么就可以监控变化了呢？玄机在哪里呢？
 
 
 
