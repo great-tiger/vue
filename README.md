@@ -270,7 +270,36 @@ Watcher.prototype.addDep = function (dep) {
 
 下面看一下依赖收集完成后，做了点什么？
 ```javascript
-//待看
-```
+Watcher.prototype.afterGet = function () {
+  Dep.target = null
+  var i = this.deps.length
+  while (i--) {
+    var dep = this.deps[i]
+    if (!this.newDepIds.has(dep.id)) {
+      dep.removeSub(this)
+    }
+  }
+  /*
+      下面主要功能，保存新依赖，清理就依赖：
+      this.depIds = this.newDepIds
+      this.newDepIds.clear()
 
+      this.deps = this.newDeps
+      this.newDeps.length = 0
+  */
+  var tmp = this.depIds
+  this.depIds = this.newDepIds
+  this.newDepIds = tmp
+  this.newDepIds.clear()
+  tmp = this.deps
+  this.deps = this.newDeps
+  this.newDeps = tmp
+  this.newDeps.length = 0
+}
+```
+通过读代码发现，afterGet主要是对deps中保存的dep进行处理。
+如果在newDeps中已经没有dep信息了，则从该dep中移除自己。
+为什么要这么做，看到这里还不是很明朗，待以后发现原因吧！
+
+如果我们监视的属性被赋值时，会触发dep.notify方法，我们的watcher就会收到通知，触发update方法。下面看一下update方法。
 
