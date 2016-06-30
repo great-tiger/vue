@@ -184,16 +184,20 @@ userQueue
 pushWatcher (watcher) 将 watcher 放入到队列，下一次事件循环时，执行watcher.run的方法
 
 watcher 结构:
+```javascript
 {
   id:...
   user:true||false  //true 放入到userQueue  false 放入到queue队列
   run:...
 }
+```
 
 ##cache.js
 
 实现最近不常用算法
+```javascript
 put(key,value)
 get(key)
+```
 
 
