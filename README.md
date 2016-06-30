@@ -333,5 +333,25 @@ function compile(el, options, partial) {
     };
   }
 ```
+compileNodeList
+代码就不往外粘了，就是递归遍历每一个节点调用compileNode
+
+下面看 compileNode
+```javascript
+  function compileNode(node, options) {
+    var type = node.nodeType;
+    if (type === 1 && !isScript(node)) {
+      return compileElement(node, options);
+    } else if (type === 3 && node.data.trim()) {
+      return compileTextNode(node, options);
+    } else {
+      return null;
+    }
+  }
+```
+逻辑很清楚，如果是元素就调用compileElement编译，如果是TEXT_NODE则用compileNode编译。
+下面我们先看复杂的吧compileElement
+
+
 
 
