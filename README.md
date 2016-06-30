@@ -243,7 +243,20 @@ export default function Watcher (vm, expOrFn, cb, options) {
 }
 ```
 通过看上面的代码，也没有发现什么神奇的地方。就是一些初始化工作。接着注意一下$watch的实现，就是调用了一下new Watcher实例化了一个对象，怎么就可以监控变化了呢？玄机在哪里呢？
-
-
+接着我们看this.get(),对了，上源码
+```javascript
+//Evaluate the getter, and re-collect dependencies.
+Watcher.prototype.get = function () {
+  this.beforeGet() //   Dep.target = this
+  var scope = this.vm
+  var value = this.getter.call(scope, scope)   //这里会调用被监控属性的get方法，然后在get方法中触发watcher的addDep方法，玄机就在这里。具体查看addDep源码很简单。
+  this.afterGet() //Clean up for dependency collection.
+  return value
+}
+```
+下面看一下依赖收集完成后，做了点什么？
+```javascript
+//待看
+```
 
 
