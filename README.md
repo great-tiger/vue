@@ -350,7 +350,12 @@ compileNodeList
   }
 ```
 逻辑很清楚，如果是元素就调用compileElement编译，如果是TEXT_NODE则用compileNode编译。
-下面我们先看复杂的吧compileElement
+先易后难吧，我们先看compileTextNode
+```html
+<div id="app">
+  {{ message }}
+</div>
+```
 
 
 
