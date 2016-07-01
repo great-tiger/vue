@@ -354,4 +354,10 @@ compileNodeList
 
 
 
+##parses/path.js
+parsePath 对path进行解析，输出是一个数组
+parsePath('a.b') -->> ['a', 'b']
+parsePath('a[0][1]') -->> ['a', '0', '1']
+
+
 
