@@ -359,6 +359,34 @@ compileNodeList
 parsePath 对path进行解析，输出是一个数组
 parsePath('a.b') -->> ['a', 'b']
 parsePath('a[0][1]') -->> ['a', '0', '1']
+
+getPath典型应用
+it('get', function () {
+    var path = 'a[\'b"b"c\'][0]'
+    var obj = {
+      a: {
+        'b"b"c': [12345]
+      }
+    }
+    expect(Path.getPath(obj, path)).toBe(12345)
+    expect(Path.getPath(obj, 'a.c')).toBeUndefined()
+})
+
+setPath典型应用
+it('set', function () {
+    var path = 'a.b.c'
+    var obj = {
+      a: {
+        b: {
+          c: null
+        }
+      }
+    }
+    var res = Path.setPath(obj, path, 12345)
+    expect(res).toBe(true)
+    expect(obj.a.b.c).toBe(12345)
+})
+
 ```
 
 
