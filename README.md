@@ -452,7 +452,10 @@ function compileTextNode(node, options) {
       //文本节点的处理，分析完成
       //对于文本节点来说，编译阶段的成果就是tokens,frag，以闭包的形式传给了link函数
 ```
-
+下面我们看看，是如何编译元素节点的。compileElement
+```
+待分析 ？？？？？？
+```
 
 
 ##parses/path.js
