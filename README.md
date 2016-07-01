@@ -350,7 +350,7 @@ compileNodeList
   }
 ```
 逻辑很清楚，如果是元素就调用compileElement编译，如果是TEXT_NODE则用compileNode编译。
-先易后难吧，我们先看compileTextNode
+先易后难吧，我们先看compileTextNode,用下面的实例走一下流程
 ```html
 <div id="app">
   {{ message }}
@@ -363,6 +363,93 @@ new Vue({
     message: 'Hello Vue.js!'
   }
 })
+```
+```
+function compileTextNode(node, options) {
+    /*
+            [{
+                "value": "\n  "
+            }, {
+                "tag": true,
+                "value": "message",
+                "html": false,
+                "oneTime": false
+            }, {
+                "value": "\n"
+            }]
+    */
+    var tokens = parseText(node.wholeText);
+    //根据token构造文档片段，当中重要的是 processTextToken
+    var frag = document.createDocumentFragment();
+    var el, token;
+    for (var i = 0, l = tokens.length; i < l; i++) {
+      token = tokens[i];
+      el = token.tag ? processTextToken(token, options) : document.createTextNode(token.value);
+      frag.appendChild(el);
+    }
+    //返回link函数
+    return makeTextNodeLinkFn(tokens, frag, options);
+  }
+
+   //主要作用是：为token增加descriptor
+   function processTextToken(token, options) {
+      var el;
+      if (token.oneTime) {
+        el = document.createTextNode(token.value);
+      } else {
+        if (token.html) {
+          el = document.createComment('v-html');
+          setTokenType('html');
+        } else {
+          // IE will clean up empty textNodes during
+          // frag.cloneNode(true), so we have to give it
+          // something here...
+          el = document.createTextNode(' ');
+          setTokenType('text');
+        }
+      }
+      function setTokenType(type) {
+        if (token.descriptor) return;
+        /*parsed 结果 {expression: "message"}*/
+        var parsed = parseDirective(token.value);
+        /*指令描述符 new Directive(descriptor,......)*/
+        token.descriptor = {
+          name: type,
+          def: directives[type],
+          expression: parsed.expression,
+          filters: parsed.filters
+        };
+      }
+      return el;
+    }
+    //构造link函数并返回。link函数执行的时候，tokens很轻松地可以访问到。(闭包)
+    function makeTextNodeLinkFn(tokens, frag) {
+        return function textNodeLinkFn(vm, el, host, scope) {
+          var fragClone = frag.cloneNode(true);
+          var childNodes = toArray(fragClone.childNodes);
+          var token, value, node;
+          for (var i = 0, l = tokens.length; i < l; i++) {
+            token = tokens[i];
+            value = token.value;
+            if (token.tag) {
+              node = childNodes[i];
+              if (token.oneTime) {
+                value = (scope || vm).$eval(value);
+                if (token.html) {
+                  replace(node, parseTemplate(value, true));
+                } else {
+                  node.data = _toString(value);
+                }
+              } else {
+                /*绑定指令，通过指令实现双向绑定  也就是说{{}}绑定，最终会被转换成指令*/
+                vm._bindDir(token.descriptor, node, host, scope);
+              }
+            }
+          }
+          replace(el, fragClone);
+        };
+      }
+      //文本节点的处理，分析完成
 ```
 
 
