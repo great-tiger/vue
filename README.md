@@ -450,6 +450,7 @@ function compileTextNode(node, options) {
         };
       }
       //文本节点的处理，分析完成
+      //对于文本节点来说，编译阶段的成果就是tokens,frag，以闭包的形式传给了link函数
 ```
 
 
