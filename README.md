@@ -453,7 +453,7 @@ function compileTextNode(node, options) {
       //对于文本节点来说，编译阶段的成果就是tokens,frag，以闭包的形式传给了link函数
 ```
 下面我们看看，是如何编译元素节点的。compileElement
-```
+```javascript
 //测试用例
 <div id="app">
   <img v-bind:src="message" width="30px" />
@@ -466,7 +466,7 @@ new Vue({
   }
 })
 ```
-```
+```javascript
 //编译指令，返回linkFn
 function compileElement(el, options) {
     var linkFn;
@@ -585,7 +585,7 @@ function compileElement(el, options) {
   //对于元素节点的编译分析完成
   //通过上面的分析发现，linkFn中都是通过调用vm._bindDir实现指令与元素关联的。下面我们可以分析一下vm._bindDir
 ```
-```
+```javascript
 vm._bindDir ??????
 ```
 
