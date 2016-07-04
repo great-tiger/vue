@@ -570,9 +570,24 @@ function compileElement(el, options) {
       return makeNodeLinkFn(dirs);
     }
   }
+  //直接返回linkFn。通过这里可以看出编译阶段主要做了一件事 就是收集指令 传给linkFn
+  function makeNodeLinkFn(directives) {
+      return function nodeLinkFn(vm, el, host, scope, frag) {
+        // reverse apply because it's sorted low to high
+        var i = directives.length;
+        while (i--) {
+          //绑定指令到元素
+          vm._bindDir(directives[i], el, host, scope, frag);
+        }
+      };
+  }
 
+  //对于元素节点的编译分析完成
+  //通过上面的分析发现，linkFn中都是通过调用vm._bindDir实现指令与元素关联的。下面我们可以分析一下vm._bindDir
 ```
-
+```
+vm._bindDir ??????
+```
 
 ##parses/path.js
 ```javascript
