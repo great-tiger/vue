@@ -454,7 +454,132 @@ function compileTextNode(node, options) {
 ```
 下面我们看看，是如何编译元素节点的。compileElement
 ```
-待分析 ？？？？？？
+//测试用例
+<div id="app">
+  <img v-bind:src="message" width="30px" />
+</div>
+
+new Vue({
+  el: '#app',
+  data: {
+    message: 'https://www.google.com.hk/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png'
+  }
+})
+```
+```
+//编译指令，返回linkFn
+function compileElement(el, options) {
+    var linkFn;
+    var hasAttrs = el.hasAttributes();
+    var attrs = hasAttrs && toArray(el.attributes);
+    // check terminal directives (for & if)
+    if (hasAttrs) {
+      linkFn = checkTerminalDirectives(el, attrs, options);
+    }
+    // check element directives  处理元素指令，此例中略过
+    if (!linkFn) {
+      linkFn = checkElementDirectives(el, options);
+    }
+    // check component 处理组件，此例中略过
+    if (!linkFn) {
+      linkFn = checkComponent(el, options);
+    }
+    // normal directives 此例中，是通过下面处理的
+    if (!linkFn && hasAttrs) {
+      linkFn = compileDirectives(attrs, options);
+    }
+    return linkFn;
+  }
+
+
+  function compileDirectives(attrs, options) {
+    var i = attrs.length;
+    var dirs = [];
+    var attr, name, value, rawName, rawValue, dirName, arg, modifiers, dirDef, tokens, matched;
+    while (i--) {
+      attr = attrs[i];
+      name = rawName = attr.name;
+      value = rawValue = attr.value;
+      tokens = parseText(value);
+      // reset arg
+      arg = null;
+
+      // attribute interpolations
+      if (tokens) {
+         // 因为tokens为null，略过
+      } else
+
+        // special attribute: transition
+        if (transitionRE.test(name)) {
+            //跳过
+        } else
+
+          // event handlers
+          if (onRE.test(name)) {
+            //跳过
+          } else
+
+            // attribute bindings
+            if (bindRE.test(name)) {
+              dirName = name.replace(bindRE, '');
+              if (dirName === 'style' || dirName === 'class') {
+                pushDir(dirName, internalDirectives[dirName]);
+              } else {
+                arg = dirName;
+                pushDir('bind', directives.bind);
+              }
+            } else
+
+              // normal directives
+              if (matched = name.match(dirAttrRE)) {
+                dirName = matched[1];
+                arg = matched[2];
+
+                // skip v-else (when used with v-show)
+                if (dirName === 'else') {
+                  continue;
+                }
+
+                dirDef = resolveAsset(options, 'directives', dirName, true);
+                if (dirDef) {
+                  pushDir(dirName, dirDef);
+                }
+              }
+    }
+
+    /**
+     * Push a directive.
+     *
+     * @param {String} dirName
+     * @param {Object|Function} def
+     * @param {Array} [interpTokens]
+     */
+
+    function pushDir(dirName, def, interpTokens) {
+      var hasOneTimeToken = interpTokens && hasOneTime(interpTokens);
+      var parsed = !hasOneTimeToken && parseDirective(value);
+      dirs.push({
+        name: dirName,
+        attr: rawName,
+        raw: rawValue,
+        def: def,
+        arg: arg,
+        modifiers: modifiers,
+        // conversion from interpolation strings with one-time token
+        // to expression is differed until directive bind time so that we
+        // have access to the actual vm context for one-time bindings.
+        expression: parsed && parsed.expression,
+        filters: parsed && parsed.filters,
+        interp: interpTokens,
+        hasOneTime: hasOneTimeToken
+      });
+    }
+
+    if (dirs.length) {
+      return makeNodeLinkFn(dirs);
+    }
+  }
+
 ```
 
 
