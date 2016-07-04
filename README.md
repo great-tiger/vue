@@ -520,6 +520,7 @@ function compileElement(el, options) {
           } else
 
             // attribute bindings
+            // var bindRE = /^v-bind:|^:/;
             if (bindRE.test(name)) {
               dirName = name.replace(bindRE, '');
               if (dirName === 'style' || dirName === 'class') {
@@ -532,18 +533,7 @@ function compileElement(el, options) {
 
               // normal directives
               if (matched = name.match(dirAttrRE)) {
-                dirName = matched[1];
-                arg = matched[2];
-
-                // skip v-else (when used with v-show)
-                if (dirName === 'else') {
-                  continue;
-                }
-
-                dirDef = resolveAsset(options, 'directives', dirName, true);
-                if (dirDef) {
-                  pushDir(dirName, dirDef);
-                }
+                //跳过
               }
     }
 
@@ -575,6 +565,7 @@ function compileElement(el, options) {
       });
     }
 
+    //其实上面在做一件事 调用pushDir收集指令
     if (dirs.length) {
       return makeNodeLinkFn(dirs);
     }
