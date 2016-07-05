@@ -586,7 +586,10 @@ function compileElement(el, options) {
   //通过上面的分析发现，linkFn中都是通过调用vm._bindDir实现指令与元素关联的。下面我们可以分析一下vm._bindDir
 ```
 ```javascript
-vm._bindDir ??????
+Vue.prototype._bindDir = function (descriptor, node, host, scope, frag) {
+      this._directives.push(new Directive(descriptor, this, node, host, scope, frag));
+};
+//通过看代码，我们发现真正的魔法，在Directive中。具体参考Directive解析吧。
 ```
 
 ##parses/path.js
