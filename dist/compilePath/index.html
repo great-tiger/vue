@@ -1,0 +1,79 @@
+<html>
+<head>
+	<title></title>
+</head>
+<script type="text/javascript" src="./vue.js"></script>
+<body>
+	<div id="a" v-bind:a="text">
+		<div id="a1" v-bind:a="text">
+			<div id="a1-1" v-bind:a="text">
+				<div id="a1-1-1" v-bind:a="text">
+		
+				</div>
+			</div>
+			<div id="a1-2" v-bind:a="text">
+			
+			</div>
+		</div>
+
+		<div id="a2" v-bind:a="text">
+			<div id="a2-1" v-bind:a="text">
+				<div id="a2-1-1" v-bind:a="text">
+		
+				</div>
+			</div>
+
+			<div id="a2-2" v-bind:a="text">
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+			new Vue({
+				el:"#a",
+				data:{
+					text:'haha'
+				}
+			});
+			/*
+
+			0 "link-->>  a"
+			1 "compile-->>  a"
+			2 "compile-->>  a1"
+			3 "compile-->>  a1-1"
+			4 "compile-->>  a1-1-1"
+			5 "compile-->>  a1-2"
+			6 "compile-->>  a2"
+			7 "compile-->>  a2-1"
+			8 "compile-->>  a2-1-1"
+			9 "compile-->>  a2-2"
+			10 "link-->>  a1"
+			11 "link-->>  a1-1"
+			12 "link-->>  a1-1-1"
+			13 "link-->>  a1-2"
+			14 "link-->>  a2"
+			15 "link-->>  a2-1"
+			16 "link-->>  a2-1-1"
+			17 "link-->>  a2-2"
+			
+			在不考虑根节点的情况下：compile 和 link 阶段都是按照深度优先遍历走的
+			
+			为什么根节点出现反常呢？
+			var rootLinker = compileRoot(el, options, contextOptions); 先编译根节点
+		    // link phase
+		    // make sure to link root with prop scope!
+		    var rootUnlinkFn = rootLinker(this, el, this._scope); link根节点 
+		    //下面的编译还是从根节点开始的，但是此时根节点的compile和link都已经执行完成了。
+		    //所以在调用compile时，根节点就是应付一下，其实没啥用就退出了。
+		    //因为指令已经从属性上删除了
+		    var contentUnlinkFn = contentLinkFn ? contentLinkFn(this, el) : compile(el, options)(this, el);
+
+
+		    所以真正的过程是这样子的？
+		    根节点compile -->> link
+		    其它节点按照深度优先遍历走compile -->> 然后按照同样的路执行 link 
+			*/
+	</script>
+
+
+</body>
+</html>

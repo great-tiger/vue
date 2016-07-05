@@ -4,6 +4,9 @@
 
 由粗及细，步步为营！
 
+##编译过程简述
+查看dis/compilePath中的例子
+
 ## Vue 配置详解
 
 ```javascript
