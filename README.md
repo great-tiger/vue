@@ -590,6 +590,23 @@ Vue.prototype._bindDir = function (descriptor, node, host, scope, frag) {
       this._directives.push(new Directive(descriptor, this, node, host, scope, frag));
 };
 //通过看代码，我们发现真正的魔法，在Directive中。具体参考Directive解析吧。
+
+//总体来说一下compile-->>link 
+//compile 收集指令 link 主要是生成scope 调用vm._bindDir
+//通过看Directive中的解析我们发现vm._bindDir, 除了push了一个指令实例外，其他的什么都没做。指令到底什么时候起的作用呢？
+//我们还得把眼光集中到compile中的linkAndCapture
+//在这个方法中分别调用了指令对象的_bind方法。指令这样才起到了真正的作用。
+function linkAndCapture(linker, vm) {
+    linker();
+    var dirs = vm._directives.slice(originalDirCount);
+    dirs.sort(directiveComparator);
+    for (var i = 0, l = dirs.length; i < l; i++) {
+      dirs[i]._bind();
+    }
+    return dirs;
+  }
+
+
 ```
 ##Directive.js
 ```
@@ -601,6 +618,30 @@ arg: 指令的参数。 hello
 name: 指令的名字，不包含前缀。demo
 modifiers: 一个对象，包含指令的修饰符。{"b":true,"a":true}
 descriptor: 一个对象，包含指令的解析结果。 指令的描述对象，包括expression name arg modifiers filters等
+```
+```javascript
+//指令对象的构造函数，就是用来初始化的，别的什么都没做
+export default function Directive (descriptor, vm, el, host, scope, frag) {
+  this.vm = vm
+  this.el = el
+  // copy descriptor properties
+  this.descriptor = descriptor
+  this.name = descriptor.name
+  this.expression = descriptor.expression
+  this.arg = descriptor.arg
+  this.modifiers = descriptor.modifiers
+  this.filters = descriptor.filters
+  this.literal = this.modifiers && this.modifiers.literal
+  // private
+  this._locked = false
+  this._bound = false
+  this._listeners = null
+  // link context
+  this._host = host
+  this._scope = scope
+  this._frag = frag
+}
+
 ```
 ##parses/path.js
 ```javascript
