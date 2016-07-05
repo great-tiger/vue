@@ -642,6 +642,48 @@ export default function Directive (descriptor, vm, el, host, scope, frag) {
   this._frag = frag
 }
 
+
+Directive.prototype._bind = function () {
+  var name = this.name
+  var descriptor = this.descriptor
+  //指令的定义对象 {bind:...,update:...,unbind:...}
+  var def = descriptor.def
+  extend(this, def)
+  // 调用指令定义对象的bind方法
+  // initial bind
+  if (this.bind) {
+    this.bind()
+  }
+
+  // wrapped updater for context
+  var dir = this
+  if (this.update) {
+    this._update = function (val, oldVal) {
+      if (!dir._locked) {
+        dir.update(val, oldVal)
+      }
+    }
+  }
+  
+  //监控的表达式 与 watcher联系起来了。值更新会调用this._update方法。
+  //魔法归于Watcher了
+  var watcher = this._watcher = new Watcher(
+    this.vm,
+    this.expression,
+    this._update, // callback
+    {
+      filters: this.filters,
+      twoWay: this.twoWay,
+      deep: this.deep,
+      preProcess: preProcess,
+      postProcess: postProcess,
+      scope: this._scope
+    }
+  )
+
+  this.update(watcher.value)
+}
+
 ```
 ##parses/path.js
 ```javascript
