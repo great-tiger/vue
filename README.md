@@ -591,7 +591,17 @@ Vue.prototype._bindDir = function (descriptor, node, host, scope, frag) {
 };
 //通过看代码，我们发现真正的魔法，在Directive中。具体参考Directive解析吧。
 ```
-
+##Directive.js
+```
+指令对象暴露的一些有用的属性 <div id="demo" v-demo:hello.a.b="msg"></div>
+el: 指令绑定的元素。
+vm: 拥有该指令的上下文 ViewModel。
+expression: 指令的表达式，不包括参数和过滤器。这个表达式用于watch
+arg: 指令的参数。 hello
+name: 指令的名字，不包含前缀。demo
+modifiers: 一个对象，包含指令的修饰符。{"b":true,"a":true}
+descriptor: 一个对象，包含指令的解析结果。 指令的描述对象，包括expression name arg modifiers filters等
+```
 ##parses/path.js
 ```javascript
 parsePath 对path进行解析，输出是一个数组
