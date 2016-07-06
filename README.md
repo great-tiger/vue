@@ -722,5 +722,112 @@ it('set', function () {
 })
 
 ```
+##组件
+```
+ var MyComponent=Vue.extend({
+   template:'<div>A custom component</div>'
+ });
+ Vue.component('my-component',MyComponent);
+ var vue=new Vue({
+   el:"#app"
+ });
 
+ 另外文档中介绍还有一种简洁的写法
+ Vue.component('my-component',{
+   template:'<div>A custom component</div>'
+ });
+
+ 那么两种写法是怎样转换的呢？
+
+```
+
+```javascript
+//_assetTypes: ['component', 'directive', 'elementDirective', 'filter', 'transition', 'partial'],
+config._assetTypes.forEach(function (type) {
+      Vue[type] = function (id, definition) {
+        if (!definition) {
+          //获取组件
+          return this.options[type + 's'][id];
+        } else {
+          //如果是便捷写法的话 调用Vue.extend方法
+          if (type === 'component' && isPlainObject(definition)) {
+            if (!definition.name) {
+              definition.name = id;
+            }
+            definition = Vue.extend(definition);
+          }
+          //放置到this.options上
+          this.options[type + 's'][id] = definition;
+          return definition;
+        }
+      };
+    });
+//通过上面的代码，我们知道两种写法之间的关系。我们继续看组件的实现 Vue.extend 方法
+
+//Vue中实现继承的方法
+Vue.extend = function (extendOptions) {
+      extendOptions = extendOptions || {};
+      var Super = this;
+     
+      var name = extendOptions.name || Super.options.name;
+      var Sub = createClass(name || 'VueComponent');
+      Sub.prototype = Object.create(Super.prototype);
+      Sub.prototype.constructor = Sub;
+      Sub.cid = cid++;
+      Sub.options = mergeOptions(Super.options, extendOptions);
+      Sub['super'] = Super;
+      // allow further extension
+      Sub.extend = Super.extend;
+      // create asset registers, so extended classes
+      // can have their private assets too.
+      config._assetTypes.forEach(function (type) {
+        Sub[type] = Super[type];
+      });
+     
+      return Sub;
+};
+//其中createClass
+function createClass(name) {
+  return new Function('return function ' + classify(name) + ' (options) { this._init(options) }')();
+}
+
+//通过上面的代码，我们知道,原来component,就是一个Vue的子类
+//生成的组件最终被放到了this.options['components']中
+//接着分析，那么生成的组件，是怎么起作用的呢？通过组件的使用方式<my-component></my-component>
+//我们可以猜到肯定与编译有关系，顺着这个思路。我们在compileElement中查到了相应的分支。
+function compileElement(el, options) {
+    // check component
+    if (!linkFn) {
+      linkFn = checkComponent(el, options);
+    }
+    return linkFn;
+}
+
+ function checkComponent(el, options) {
+    var component = checkComponentAttr(el, options);
+    if (component) {
+      var ref = findRef(el);
+      var descriptor = {
+        name: 'component',
+        ref: ref,
+        expression: component.id,
+        def: internalDirectives.component,
+        modifiers: {
+          literal: !component.dynamic
+        }
+      };
+      var componentLinkFn = function componentLinkFn(vm, el, host, scope, frag) {
+        if (ref) {
+          defineReactive((scope || vm).$refs, ref, null);
+        }
+        vm._bindDir(descriptor, el, host, scope, frag);
+      };
+      componentLinkFn.terminal = true;
+      return componentLinkFn;
+    }
+  }
+  //在上面这个方法中，在link函数中，没有发现什么特别的。
+  //在编译阶段，internalDirectives.component 应该是真正的魔法。
+  //真正的魔法在内置的组件指令定义中，下面仔细看一下internalDirectives.component
+```
 

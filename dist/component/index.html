@@ -1,0 +1,22 @@
+<html>
+<head>
+	<title></title>
+</head>
+<script type="text/javascript" src="./vue.js"></script>
+<body>
+	<div id="app">
+      <my-component></my-component>
+	</div>
+	<script type="text/javascript">
+	   var MyComponent=Vue.extend({
+	   	 template:'<div>A custom component</div>'
+	   });
+	   Vue.component('my-component',MyComponent);
+	   var vue=new Vue({
+	   	 el:"#app"
+	   });
+
+	   console.log(vue);
+	</script>
+</body>
+</html>
