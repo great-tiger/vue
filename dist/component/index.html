@@ -7,16 +7,35 @@
 	<div id="app">
       <my-component></my-component>
 	</div>
-	<script type="text/javascript">
-	   var MyComponent=Vue.extend({
-	   	 template:'<div>A custom component</div>'
-	   });
-	   Vue.component('my-component',MyComponent);
-	   var vue=new Vue({
-	   	 el:"#app"
-	   });
 
-	   console.log(vue);
+	<div id="mount-point"></div>
+	<script type="text/javascript">
+	   // var MyComponent=Vue.extend({
+	   // 	 template:'<div>A custom component</div>'
+	   // });
+	   // Vue.component('my-component',MyComponent);
+	   // var vue=new Vue({
+	   // 	 el:"#app"
+	   // });
+
+	   // console.log(vue);
+
+
+
+	    // 创建可复用的构造器 演示extend方法
+		var Profile = Vue.extend({
+		  template: '<p>{{firstName}} {{lastName}} aka {{alias}}</p>'
+		})
+		// 创建一个 Profile 实例
+		var profile = new Profile({
+		  data: {
+		    firstName: 'Walter',
+		    lastName: 'White',
+		    alias: 'Heisenberg'
+		  }
+		})
+		// 挂载到元素上
+		profile.$mount('#mount-point')
 	</script>
 </body>
 </html>

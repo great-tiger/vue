@@ -764,8 +764,13 @@ config._assetTypes.forEach(function (type) {
     });
 //通过上面的代码，我们知道两种写法之间的关系。我们继续看组件的实现 Vue.extend 方法
 
-//Vue中实现继承的方法
+//Vue中实现继承的方法 
+//官网api中,介绍
+//创建基础 Vue 构造器的“子类”。参数是一个对象，包含组件选项。
+//这里要注意的特例是 el 和 data 选项在 Vue.extend() 中它们必须是函数。
 Vue.extend = function (extendOptions) {
+      //下面有两个地方不太了解 mergeOptions ,另外一个就是拷贝_assetTypes。
+      //个人觉得没有必要
       extendOptions = extendOptions || {};
       var Super = this;
      
@@ -774,12 +779,23 @@ Vue.extend = function (extendOptions) {
       Sub.prototype = Object.create(Super.prototype);
       Sub.prototype.constructor = Sub;
       Sub.cid = cid++;
+      //options 的定义在 installGlobalAPI 中
+      /**
+       * Vue and every constructor that extends Vue has an
+       * associated options object, which can be accessed during
+       * compilation steps as `this.constructor.options`.
+       *
+       * These can be seen as the default options of every
+       * Vue instance. 说的挺清楚，就不翻译了
+       * 查看一下代码，发现options上保存了内置的指令，过滤器
+       */
       Sub.options = mergeOptions(Super.options, extendOptions);
       Sub['super'] = Super;
       // allow further extension
       Sub.extend = Super.extend;
       // create asset registers, so extended classes
       // can have their private assets too.
+      // 为什么需要拷贝呢，真是理解不了
       config._assetTypes.forEach(function (type) {
         Sub[type] = Super[type];
       });
