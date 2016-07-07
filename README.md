@@ -846,4 +846,50 @@ function compileElement(el, options) {
   //在编译阶段，internalDirectives.component 应该是真正的魔法。
   //真正的魔法在内置的组件指令定义中，下面仔细看一下internalDirectives.component
 ```
-
+##mergeOptions
+```
+文档中说的很清楚，使用在extend 和 _init中。搜索了一下发现 Vue.mixin 也是使用的它
+Merge two option objects into a new one.
+Core utility used in both instantiation and inheritance.
+下面看一下它的具体实现
+```
+```javascript
+export function mergeOptions (parent, child, vm) {
+  guardComponents(child)
+  guardProps(child)
+  if (process.env.NODE_ENV !== 'production') {
+    if (child.propsData && !vm) {
+      warn('propsData can only be used as an instantiation option.')
+    }
+  }
+  var options = {}
+  var key
+  if (child.extends) {
+    parent = typeof child.extends === 'function'
+      ? mergeOptions(parent, child.extends.options, vm)
+      : mergeOptions(parent, child.extends, vm)
+  }
+  if (child.mixins) {
+    for (var i = 0, l = child.mixins.length; i < l; i++) {
+      var mixin = child.mixins[i]
+      var mixinOptions = mixin.prototype instanceof Vue
+        ? mixin.options
+        : mixin
+      parent = mergeOptions(parent, mixinOptions, vm)
+    }
+  }
+  for (key in parent) {
+    mergeField(key)
+  }
+  for (key in child) {
+    if (!hasOwn(parent, key)) {
+      mergeField(key)
+    }
+  }
+  function mergeField (key) {
+    var strat = strats[key] || defaultStrat
+    options[key] = strat(parent[key], child[key], vm, key)
+  }
+  return options
+}
+```
