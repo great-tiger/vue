@@ -882,6 +882,10 @@ export function mergeOptions (parent, child, vm) {
   //defaultStrat 默认策略,如果孩子存在则用孩子的，否则用父亲的。
   //注意不是覆盖啊,这和以前接触的处理options的方式是不同的。
   //假如采用默认策略defaultStrat的话，拷贝孩子没有的东西给孩子，孩子有的就不管了。
+  //接着我们看看默认的合并策略都有什么，真不少啊。特殊处理的key有components computed 等等。
+  //这些信息被保存到了Vue.config.optionMergeStrategies中。具体情况具体分析吧。
+  //下面看看对components如何处理的，读源码发现，绕来绕去，还是为了实现访问的时候，孩子有的就用孩子的
+  //否则就用父亲的
   for (key in parent) {
     mergeField(key)
   }
