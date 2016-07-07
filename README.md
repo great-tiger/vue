@@ -854,6 +854,7 @@ Core utility used in both instantiation and inheritance.
 下面看一下它的具体实现
 ```
 ```javascript
+//注意返回的是一个新的option对象
 export function mergeOptions (parent, child, vm) {
   guardComponents(child)
   guardProps(child)
@@ -878,11 +879,14 @@ export function mergeOptions (parent, child, vm) {
       parent = mergeOptions(parent, mixinOptions, vm)
     }
   }
+  //defaultStrat 默认策略,如果孩子存在则用孩子的，否则用父亲的。
+  //注意不是覆盖啊,这和以前接触的处理options的方式是不同的。
+  //假如采用默认策略defaultStrat的话，拷贝孩子没有的东西给孩子，孩子有的就不管了。
   for (key in parent) {
     mergeField(key)
   }
   for (key in child) {
-    if (!hasOwn(parent, key)) {
+    if (!hasOwn(parent, key)) {//避免key的重复处理
       mergeField(key)
     }
   }
