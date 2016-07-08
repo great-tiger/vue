@@ -18,24 +18,36 @@
 	   // 	 el:"#app"
 	   // });
 
-	   // console.log(vue);
+	   //  console.log(MyComponent);
 
 
 
-	    // 创建可复用的构造器 演示extend方法
-		var Profile = Vue.extend({
-		  template: '<p>{{firstName}} {{lastName}} aka {{alias}}</p>'
-		})
-		// 创建一个 Profile 实例
-		var profile = new Profile({
-		  data: {
-		    firstName: 'Walter',
-		    lastName: 'White',
-		    alias: 'Heisenberg'
+	 //    // 创建可复用的构造器 演示extend方法
+		// var Profile = Vue.extend({
+		//   template: '<p>{{firstName}} {{lastName}} aka {{alias}}</p>'
+		// })
+		// // 创建一个 Profile 实例
+		// var profile = new Profile({
+		//   data: {
+		//     firstName: 'Walter',
+		//     lastName: 'White',
+		//     alias: 'Heisenberg'
+		//   }
+		// })
+		// // 挂载到元素上
+		// profile.$mount('#mount-point')
+
+
+
+		var Parent = Vue.extend({
+		  components: {
+		    'my-component': {
+		      template: '<div>A custom component!</div>'
+		    }
 		  }
 		})
-		// 挂载到元素上
-		profile.$mount('#mount-point')
+
+		console.log(Parent);
 	</script>
 </body>
 </html>

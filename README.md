@@ -901,3 +901,120 @@ export function mergeOptions (parent, child, vm) {
   return options
 }
 ```
+##组件杂想
+
+###组件的定义及存储位置
+
+```
+说到组件不可不提到Vue.extend
+文档说Vue.extend是用来创建Vue构造器的子类，查过源码之后发现，就是继承。
+组件部分又说Vue.extend用来创建一个组件构造器，也就是说Vue的子类可以当做组件构造器。
+文档中提示，如果想把这个构造器用作组件，需要用Vue.component(tag, constructor)注册。
+```
+```javascript
+//Vue.component的代码，我们再粘一次
+config._assetTypes.forEach(function (type) {
+      Vue[type] = function (id, definition) {
+        if (!definition) {
+          //获取组件
+          return this.options[type + 's'][id];
+        } else {
+          //如果是便捷写法的话 调用Vue.extend方法
+          if (type === 'component' && isPlainObject(definition)) {
+            if (!definition.name) {
+              definition.name = id;
+            }
+            definition = Vue.extend(definition);
+          }
+          //放置到this.options上
+          this.options[type + 's'][id] = definition;
+          return definition;
+        }
+      };
+});
+//发现 组件构造器 被放到了this.options["components"]上
+```
+```javascript
+//定义组件方式举例
+var MyComponent = Vue.extend({
+  template: '<div>A custom component!</div>'
+})
+
+// 注册
+Vue.component('my-component', MyComponent)
+
+//定义组件的便捷方式，语法糖。Vue.component源码中有所体现
+//在Vue.component中封装了扩展与注册，本段代码与上面的定义
+//方式是等价的
+Vue.component('my-component', {
+  template: '<div>A custom component!</div>'
+})
+
+//上面这两种写法，component到底被放到哪里了。
+//实际上是放到Vue.options上了，MyComponent.options上没有
+```
+
+```javascript
+//文档中还提到了局部注册
+var Child = Vue.extend({ /* ... */ })
+
+var Parent = Vue.extend({
+  template: '...',
+  components: {
+    // <my-component> 只能用在父组件模板内
+    'my-component': Child
+  }
+})
+
+//语法糖写法 局部注册也可以这么做
+var Parent = Vue.extend({
+  components: {
+    'my-component': {
+      template: '<div>A custom component!</div>'
+    }
+  }
+})
+
+
+//我们拿下面的代码分析一下源码
+var Parent = Vue.extend({
+  components: {
+    'my-component': {
+      template: '<div>A custom component!</div>'
+    }
+  }
+})
+
+
+/*
+Vue.extend({})  生成一个组件构造器或者说一个Vue子类
+关注一下 对 components 字段是如何处理
+
+mergeOptions
+
+guardComponents(child); 作用
+保证components转换成如何形式，语法糖的拆解吗
+{
+   'my-component':组件构造器
+}
+
+合并components
+算法是用的
+//parentVal={}；
+//childVal={'my-component':组件构造器}
+function mergeAssets(parentVal, childVal) {
+    var res = Object.create(parentVal || null);
+    return childVal ? extend(res, guardArrayAssets(childVal)) : res;
+}
+最终合并后的结果，保存到options
+最后mergeOptions返回新的options
+options["components"]={'my-component':组件构造器}--__protp__-->>parentVal
+
+最最后
+我们发现按照上面的方式注册组件被保存到了
+Parent.options上
+结构
+options["components"]={'my-component':组件构造器}--__protp__-->>parentVal
+
+*/
+```
