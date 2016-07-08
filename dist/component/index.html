@@ -10,15 +10,15 @@
 
 	<div id="mount-point"></div>
 	<script type="text/javascript">
-	   // var MyComponent=Vue.extend({
-	   // 	 template:'<div>A custom component</div>'
-	   // });
-	   // Vue.component('my-component',MyComponent);
-	   // var vue=new Vue({
-	   // 	 el:"#app"
-	   // });
+	   var MyComponent=Vue.extend({
+	   	 template:'<div>A custom component</div>'
+	   });
+	   Vue.component('my-component',MyComponent);
+	   var vue=new Vue({
+	   	 el:"#app"
+	   });
 
-	   //  console.log(MyComponent);
+	    console.log(MyComponent);
 
 
 
@@ -39,15 +39,15 @@
 
 
 
-		var Parent = Vue.extend({
-		  components: {
-		    'my-component': {
-		      template: '<div>A custom component!</div>'
-		    }
-		  }
-		})
+		// var Parent = Vue.extend({
+		//   components: {
+		//     'my-component': {
+		//       template: '<div>A custom component!</div>'
+		//     }
+		//   }
+		// })
 
-		console.log(Parent);
+		// console.log(Parent);
 	</script>
 </body>
 </html>

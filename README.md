@@ -845,6 +845,63 @@ function compileElement(el, options) {
   //在上面这个方法中，在link函数中，没有发现什么特别的。
   //在编译阶段，internalDirectives.component 应该是真正的魔法。
   //真正的魔法在内置的组件指令定义中，下面仔细看一下internalDirectives.component
+  //下面是简化的代码说明组件是怎么使用的
+  {
+      this.Component = null
+
+      bind(){
+         this.setComponent(this.expression) //expression 组件标签名my-component
+      }
+
+      setComponent (value, cb) {
+        this.resolveComponent(value, function () {
+            //回调函数执行的时候，this.Component 已经保存了组件的定义。即组件构造器。
+            self.mountComponent(cb)
+        })
+      }
+
+      mountComponent (cb) {
+        var newComponent = this.build()
+      }
+
+      build (extraOptions) {
+        if (this.Component) {
+          // default options
+          var options = {
+            name: this.ComponentName,
+            el: cloneNode(this.el),
+            template: this.inlineTemplate,
+            // make sure to add the child with correct parent
+            // if this is a transcluded component, its parent
+            // should be the transclusion host.
+            parent: this._host || this.vm,
+            // if no inline-template, then the compiled
+            // linker can be cached for better performance.
+            _linkerCachable: !this.inlineTemplate,
+            _ref: this.descriptor.ref,
+            _asComponent: true,
+            _isRouterView: this._isRouterView,
+            // if this is a transcluded component, context
+            // will be the common parent vm of this instance
+            // and its host.
+            _context: this.vm,
+            // if this is inside an inline v-for, the scope
+            // will be the intermediate scope created for this
+            // repeat fragment. this is used for linking props
+            // and container directives.
+            _scope: this._scope,
+            // pass in the owner fragment of this component.
+            // this is necessary so that the fragment can keep
+            // track of its contained components in order to
+            // call attach/detach hooks for them.
+            _frag: this._frag
+          }
+          //实例化组件，对啦，找的就是这里了
+          var child = new this.Component(options)
+          return child
+        }
+      }
+  }
 ```
 ##mergeOptions
 ```
